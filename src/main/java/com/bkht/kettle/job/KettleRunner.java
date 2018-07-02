@@ -47,11 +47,13 @@ public class KettleRunner {
                 dataMeta.setUsingConnectionPool(true);
                 Properties p = new Properties();
 
-                p.setProperty("useSSL", "false");
+                p.setProperty("useSSL", "true");
                 p.setProperty("autoReconnectForPools", "true");
                 p.setProperty("autoReconnect", "true");
                 p.setProperty("validationQuery", "select 1");
                 p.setProperty("testOnBorrow", "true");
+                p.setProperty("serverTimezone", "Asia/Shanghai");
+                p.setProperty("characterEncoding", "UTF-8");
                 dataMeta.setConnectionPoolingProperties(p);
                 //数据库形式的资源库元对象
                 KettleDatabaseRepositoryMeta repInfo = new KettleDatabaseRepositoryMeta();

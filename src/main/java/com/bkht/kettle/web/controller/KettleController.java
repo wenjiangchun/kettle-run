@@ -130,18 +130,22 @@ public class KettleController {
     @ResponseBody
     public KettleLog runTrans(String objectId, KettleParams params) {
         try {
-            /*for (int startYear = 2013; startYear < 2019; startYear ++) {
-                //KettleRunner.runTrans(transName, startYear + "-01" + "-01",  startYear + "-06" + "-30");
-                LOGGER.debug("开始执行：startDate = " + startYear + "-01" + "-01" + "," + "endDate = " + startYear + "-06" + "-30");
-                params.getKettleParams().put("startDate", startYear + "-01" + "-01");
-                params.getKettleParams().put("endDate", startYear + "-06" + "-30");
-                kettleRunner.runTrans(objectId, params.getKettleParams());
-                LOGGER.debug("开始执行：startDate = " + startYear + "-07" + "-01" + "," + "endDate = " + startYear + "-12" + "-31");
-                params.getKettleParams().put("startDate", startYear + "-07" + "-01");
-                params.getKettleParams().put("endDate", startYear + "-12" + "-31");
-                kettleRunner.runTrans(objectId, params.getKettleParams());
-           }*/
-            return kettleRunner.runTrans(objectId, params.getKettleParams());
+            if (params.getKettleParams().containsKey("isFirst") && params.getKettleParams().get("isFirst").equals("1")) {
+                for (int startYear = 1970; startYear < 2019; startYear ++) {
+                    //KettleRunner.runTrans(transName, startYear + "-01" + "-01",  startYear + "-06" + "-30");
+                    LOGGER.debug("开始执行：startDate = " + startYear + "-01" + "-01" + "," + "endDate = " + startYear + "-06" + "-30");
+                    params.getKettleParams().put("startDate", startYear + "01" + "01");
+                    params.getKettleParams().put("endDate", startYear + "06" + "30");
+                    kettleRunner.runTrans(objectId, params.getKettleParams());
+                    LOGGER.debug("开始执行：startDate = " + startYear + "-07" + "-01" + "," + "endDate = " + startYear + "-12" + "-31");
+                    params.getKettleParams().put("startDate", startYear + "07" + "01");
+                    params.getKettleParams().put("endDate", startYear + "12" + "31");
+                    kettleRunner.runTrans(objectId, params.getKettleParams());
+                }
+                return new KettleLog();
+            } else {
+                return kettleRunner.runTrans(objectId, params.getKettleParams());
+            }
         } catch (Exception e) {
             return KettleLog.createDefaultErrorKettleLog(e.getMessage());
         }

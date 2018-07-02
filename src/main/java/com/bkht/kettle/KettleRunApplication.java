@@ -31,5 +31,7 @@ public class KettleRunApplication {
            *//* }*//*
         }
 */
+        String sql = "select * from user where name like %s";
+        LOGGER.info(String.format(sql,"'%<=60m²%'"));
     }
 }
