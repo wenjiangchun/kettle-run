@@ -1600,7 +1600,7 @@
     }
 
     // .offsetParent will return the closest TD or TABLE in case
-    // no offsetParent is present, I hate this job...
+    // no offsetParent is present, I hate this utils...
     if (['TD', 'TABLE'].indexOf(offsetParent.nodeName) !== -1 && getStyleComputedProperty(offsetParent, 'position') === 'static') {
       return getOffsetParent(offsetParent);
     }

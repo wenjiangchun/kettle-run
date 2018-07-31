@@ -665,13 +665,13 @@ var REGEXP_PRECEDER_PATTERN = '(?:^^\\.?|[+-]|\\!|\\!=|\\!==|\\#|\\%|\\%=|&|&&|&
     var nPatterns = fallthroughStylePatterns.length;
 
     /**
-     * Lexes job.sourceCode and produces an output array job.decorations of
+     * Lexes utils.sourceCode and produces an output array utils.decorations of
      * style classes preceded by the position at which they start in
-     * job.sourceCode in order.
+     * utils.sourceCode in order.
      *
      * @param {Object} job an object like <pre>{
      *    sourceCode: {string} sourceText plain text,
-     *    basePos: {int} position of job.sourceCode in the larger chunk of
+     *    basePos: {int} position of utils.sourceCode in the larger chunk of
      *        sourceCode.
      * }</pre>
      */
@@ -777,7 +777,7 @@ var REGEXP_PRECEDER_PATTERN = '(?:^^\\.?|[+-]|\\!|\\!=|\\!==|\\#|\\%|\\%=|&|&&|&
     *
     * @param {Object} options a set of optional parameters.
     * @return {function (Object)} a function that examines the source code
-    *     in the input job and builds the decoration list.
+    *     in the input utils and builds the decoration list.
     */
   function sourceDecorator(options) {
     var shortcutStylePatterns = [], fallthroughStylePatterns = [];
@@ -1047,15 +1047,15 @@ var REGEXP_PRECEDER_PATTERN = '(?:^^\\.?|[+-]|\\!|\\!=|\\!==|\\#|\\%|\\%=|&|&&|&
   }
 
   /**
-   * Breaks {@code job.sourceCode} around style boundaries in
-   * {@code job.decorations} and modifies {@code job.sourceNode} in place.
+   * Breaks {@code utils.sourceCode} around style boundaries in
+   * {@code utils.decorations} and modifies {@code utils.sourceNode} in place.
    * @param {Object} job like <pre>{
    *    sourceCode: {string} source as plain text,
    *    spans: {Array.<number|Node>} alternating span start indices into source
    *       and the text node or element (e.g. {@code <BR>}) corresponding to that
    *       span.
    *    decorations: {Array.<number|string} an array of style classes preceded
-   *       by the position at which they start in job.sourceCode in order
+   *       by the position at which they start in utils.sourceCode in order
    * }</pre>
    * @private
    */
@@ -1160,13 +1160,13 @@ var REGEXP_PRECEDER_PATTERN = '(?:^^\\.?|[+-]|\\!|\\!=|\\!==|\\#|\\%|\\%=|&|&&|&
   var langHandlerRegistry = {};
   /** Register a language handler for the given file extensions.
     * @param {function (Object)} handler a function from source code to a list
-    *      of decorations.  Takes a single argument job which describes the
+    *      of decorations.  Takes a single argument utils which describes the
     *      state of the computation.   The single parameter has the form
     *      {@code {
     *        sourceCode: {string} as plain text.
     *        decorations: {Array.<number|string>} an array of style classes
     *                     preceded by the position at which they start in
-    *                     job.sourceCode in order.
+    *                     utils.sourceCode in order.
     *                     The language handler should assigned this field.
     *        basePos: {int} the position of source in the larger source chunk.
     *                 All positions in the output decorations array are relative

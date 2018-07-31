@@ -2,65 +2,55 @@ package com.bkht.kettle.web.controller;
 
 import com.bkht.kettle.KettleLog;
 import com.bkht.kettle.KettleParams;
-import com.bkht.kettle.job.KettleRunner;
+import com.bkht.kettle.utils.KettleUtils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
-import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.TransMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.Path;
-import java.io.*;
-import java.nio.file.FileSystems;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Controller
-@RequestMapping("/kettle")
-public class KettleController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(KettleController.class);
+@RequestMapping("/kettle/job")
+public class JobController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(JobController.class);
     //String uploadPath = "/home/sofar/下载";
 
-    private final KettleRunner kettleRunner;
-
     @Autowired
-    public KettleController(KettleRunner kettleRunner) {
-        this.kettleRunner = kettleRunner;
-    }
+    private KettleUtils kettleUtils;
+
+
 
     @RequestMapping("/view")
     public String index(Model model) {
         try {
-            List<RepositoryElementMetaInterface> elementList = kettleRunner.getAllTrans("/");
-            //List<Trans> transList = new ArrayList<>();
-            model.addAttribute("transList", elementList);
+            List<RepositoryElementMetaInterface> elementList = kettleUtils.getAllJobs("/");
+            model.addAttribute("jobList", elementList);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "kettle/index";
+        return "kettle/job/index";
     }
 
     @RequestMapping("/getElementInfo/{objectId}/{type}")
     public String getElementInfo(@PathVariable String objectId, @PathVariable RepositoryObjectType type,  Model model) {
-        String page = "kettle/";
+        String page = "kettle/job/";
         try {
             switch (type) {
                 case TRANSFORMATION:
                     page += "transMetaInfo";
-                    model.addAttribute("transMeta", kettleRunner.getTransMetaByObjectId(objectId));
+                    model.addAttribute("transMeta", kettleUtils.getTransMetaByObjectId(objectId));
                     break;
                 case JOB:
                     page += "jobMetaInfo";
-                    model.addAttribute("jobMeta", kettleRunner.getJobMetaByObjectId(objectId));
+                    model.addAttribute("jobMeta", kettleUtils.getJobMetaByObjectId(objectId));
                     break;
                 case DATABASE:
                     break;
@@ -95,11 +85,11 @@ public class KettleController {
             switch (type) {
                 case TRANSFORMATION:
                     page += "transMetaLog";
-                    model.addAttribute("logs", kettleRunner.getTransMetaLogs(objectId));
+                    model.addAttribute("logs", kettleUtils.getTransMetaLogs(objectId));
                     break;
                 case JOB:
                     page += "jobMetaLog";
-                    model.addAttribute("logs", kettleRunner.getJobMetaByObjectId(objectId));
+                    model.addAttribute("logs", kettleUtils.getJobMetaByObjectId(objectId));
                     break;
                 case DATABASE:
                     break;
@@ -126,9 +116,9 @@ public class KettleController {
         }
         return page;
     }
-    @RequestMapping("/runTrans")
+    @RequestMapping("/runJob")
     @ResponseBody
-    public KettleLog runTrans(String objectId, KettleParams params) {
+    public KettleLog runJob(String objectId, KettleParams params) {
         try {
             if (params.getKettleParams().containsKey("isFirst") && params.getKettleParams().get("isFirst").equals("1")) {
                 for (int startYear = 1970; startYear < 2019; startYear ++) {
@@ -136,15 +126,16 @@ public class KettleController {
                     LOGGER.debug("开始执行：startDate = " + startYear + "-01" + "-01" + "," + "endDate = " + startYear + "-06" + "-30");
                     params.getKettleParams().put("startDate", startYear + "01" + "01");
                     params.getKettleParams().put("endDate", startYear + "06" + "30");
-                    kettleRunner.runTrans(objectId, params.getKettleParams());
+                    kettleUtils.runJob(objectId, params.getKettleParams());
                     LOGGER.debug("开始执行：startDate = " + startYear + "-07" + "-01" + "," + "endDate = " + startYear + "-12" + "-31");
                     params.getKettleParams().put("startDate", startYear + "07" + "01");
                     params.getKettleParams().put("endDate", startYear + "12" + "31");
-                    kettleRunner.runTrans(objectId, params.getKettleParams());
+                    kettleUtils.runJob(objectId, params.getKettleParams());
                 }
                 return new KettleLog();
             } else {
-                return kettleRunner.runTrans(objectId, params.getKettleParams());
+                kettleUtils.runJob(objectId, params.getKettleParams());
+                return new KettleLog();
             }
         } catch (Exception e) {
             return KettleLog.createDefaultErrorKettleLog(e.getMessage());
@@ -193,8 +184,7 @@ public class KettleController {
 
     @RequestMapping("/refreshRepository")
     public String refreshRepository() {
-        kettleRunner.clearCache();
-        return "redirect:/kettle/view";
+        return "redirect:/kettle/job/view";
     }
 
 }

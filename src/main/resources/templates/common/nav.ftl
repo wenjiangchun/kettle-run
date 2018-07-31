@@ -253,13 +253,16 @@
               </li>
               <li class="treeview">
                   <a href="#">
-                      <i class="fa fa-table"></i> <span>Tables</span>
+                      <i class="fa fa-table"></i> <span>ETL管理</span>
                       <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
+                           <i class="fa fa-angle-left pull-right"></i>
+                      </span>
                   </a>
                   <ul class="treeview-menu">
-                      <li><a href="${ctx.contextPath}/kettle/view"><i class="fa fa-circle-o"></i>转换管理</a></li>
+                      <li><a href="${ctx.contextPath}/kettle/trans/view" id="transMenu"><i class="fa fa-circle-o"></i>转换管理</a>
+                      </li>
+                      <li><a href="${ctx.contextPath}/kettle/job/view" id="jobMenu"><i class="fa fa-circle-o"></i>作业管理</a>
+                      </li>
                   </ul>
               </li>
           </ul>

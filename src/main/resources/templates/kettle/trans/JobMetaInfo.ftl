@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <#include "../common/head.ftl"/>
+  <#include "../../common/head.ftl"/>
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
         <!-- Main content -->
@@ -90,21 +90,9 @@
                     "type": "post",
                     "url": "${ctx.contextPath}/kettle/runTrans",
                     "data": queryVariables,
-                    "dataType":"json",
                     "success": function (data) {
+                        alert(data);
                         layer.closeAll('loading');
-                        if (data.success) {
-                            layer.alert("执行成功: 执行时间" + diffTime(data.startDate, data.endDate) + ", 执行日志：" + data.content, {
-                                icon: 1,
-                                skin: 'layer-ext-moon' //该皮肤由layer.seaning.com友情扩展。关于皮肤的扩展规则，去这里查阅
-                            })
-                        } else {
-                            layer.alert("执行失败: 失败原因：" + data.content, {
-                                icon: 2,
-                                skin: 'layer-ext-moon' //该皮肤由layer.seaning.com友情扩展。关于皮肤的扩展规则，去这里查阅
-                            })
-                        }
-
                     }
                 });
             }
@@ -119,21 +107,6 @@
             area: ['380px', '90%'],
             content: '${ctx.contextPath}/kettle/getTransMeta/'+ transObjectId //iframe的url
         });
-    }
-
-    var diffTime = function(startTime,endTime){
-        var stime = Date.parse(new Date(startTime));
-        var etime = Date.parse(new Date(endTime));
-        var usedTime = etime - stime;  //两个时间戳相差的毫秒数
-        var days=Math.floor(usedTime/(24*3600*1000));
-        //计算出小时数
-        var leave1=usedTime%(24*3600*1000);    //计算天数后剩余的毫秒数
-        var hours=Math.floor(leave1/(3600*1000));
-        //计算相差分钟数
-        var leave2=leave1%(3600*1000);        //计算小时数后剩余的毫秒数
-        var minutes=Math.floor(leave2/(60*1000));
-        var time = days + "天"+hours+"时"+minutes+"分";
-        return time;
     }
 </script>
 </body>
