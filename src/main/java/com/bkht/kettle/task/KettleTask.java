@@ -23,25 +23,27 @@ public class KettleTask {
     @Autowired
     private KettleUtils kettleUtils;
 
-    @Scheduled(cron = "0 42 8-12 * * *")
+    //@Scheduled(cron = "0 50 15-23 * * *")
+    @Scheduled(cron = "0 25 15 * * ?")
     public void run() {
         //每天执行一次
-        String[] transObjectIds = {"19","13","16","36","32","30","33","31"};
+        //String[] transObjectIds = {"19","13","16","36","32","30","33","31"};
+        String[] transObjectIds = {"2","3","4","5","6"};
         Map<String, String> params = new HashMap<>();
         //获取昨天日期
-        String startDate = DateFormatUtils.format(DateUtils.addDays(new Date(), -8), "yyyyMMdd");
+        String startDate = DateFormatUtils.format(DateUtils.addDays(new Date(), -2), "yyyyMMdd");
         String endDate = DateFormatUtils.format(DateUtils.addDays(new Date(), -1), "yyyyMMdd");
         params.put("startDate", startDate);
         params.put("endDate", endDate);
-        boolean flag = true;
         for (String transObjectId : transObjectIds) {
             try {
-                if (flag) {
-                    kettleUtils.runTrans(transObjectId, params);
-                }
-            } catch (KettleException | SQLException e) {
-                flag = false;
-                logger.error("id=[" + transObjectId + "]转换异常", e);
+                    logger.debug("当前执行时间" + new Date());
+                    kettleUtils.runJob(transObjectId, params);
+                    logger.debug("id=" + transObjectId + "执行成功");
+            } catch (Exception e) {
+                logger.error("id=[" + transObjectId + "]任务执行异常", e);
+            } finally {
+                kettleUtils.close();
             }
         }
     }

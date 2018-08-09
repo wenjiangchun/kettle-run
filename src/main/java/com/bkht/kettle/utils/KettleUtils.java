@@ -87,15 +87,16 @@ public class KettleUtils {
 
 
     public List<RepositoryElementMetaInterface> getAllTrans(String directory) throws KettleException {
+
         List<RepositoryElementMetaInterface> elements = new ArrayList<>();
         if (directory == null) {
-            directory = "/";
+            directory = "";
         }
         RepositoryDirectoryInterface rootDirectory = getConnection().findDirectory(directory);
         for (RepositoryDirectoryInterface f : rootDirectory.getChildren()) {
             elements.addAll(repository.getTransformationObjects(f.getObjectId(), true));
             if (!f.getChildren().isEmpty()) {
-                elements.addAll(getAllTrans(f.getName()));
+                elements.addAll(getAllTrans(f.getPath()));
             }
         }
         return elements;
