@@ -10,8 +10,11 @@ public class IndexController {
 
     @RequestMapping("/index")
     public String index(Model model) {
-
         return "index";
     }
 
+    @RequestMapping("/map")
+    public String map(Model model) {
+        return "map/map";
+    }
 }

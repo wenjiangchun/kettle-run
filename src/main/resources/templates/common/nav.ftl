@@ -263,6 +263,8 @@
                       </li>
                       <li><a href="${ctx.contextPath}/kettle/job/view" id="jobMenu"><i class="fa fa-circle-o"></i>作业管理</a>
                       </li>
+                      <li><a href="${ctx.contextPath}/map" id="mapMenu"><i class="fa fa-map-o"></i>地图展示</a>
+                      </li>
                   </ul>
               </li>
           </ul>

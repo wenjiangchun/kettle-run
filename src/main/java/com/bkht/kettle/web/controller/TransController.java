@@ -125,13 +125,13 @@ public class TransController {
             if (params.getKettleParams().containsKey("isFirst") && params.getKettleParams().get("isFirst").equals("1")) {
                 for (int startYear = 1970; startYear < 2019; startYear ++) {
                     //KettleRunner.runTrans(transName, startYear + "-01" + "-01",  startYear + "-06" + "-30");
-                    LOGGER.debug("开始执行：startDate = " + startYear + "-01" + "-01" + "," + "endDate = " + startYear + "-06" + "-30");
+                    LOGGER.debug("开始执行：startDate = " + startYear + "-01" + "-01" + "," + "endDate = " + startYear + "-07" + "-01");
                     params.getKettleParams().put("startDate", startYear + "01" + "01");
-                    params.getKettleParams().put("endDate", startYear + "06" + "30");
+                    params.getKettleParams().put("endDate", startYear + "07" + "01");
                     kettleRunner.runTrans(objectId, params.getKettleParams());
-                    LOGGER.debug("开始执行：startDate = " + startYear + "-07" + "-01" + "," + "endDate = " + startYear + "-12" + "-31");
+                    LOGGER.debug("开始执行：startDate = " + startYear + "-07" + "-01" + "," + "endDate = " + (startYear + 1) + "-01" + "-01");
                     params.getKettleParams().put("startDate", startYear + "07" + "01");
-                    params.getKettleParams().put("endDate", startYear + "12" + "31");
+                    params.getKettleParams().put("endDate", (startYear + 1) + "01" + "01");
                     kettleRunner.runTrans(objectId, params.getKettleParams());
                 }
                 return new KettleLog();
