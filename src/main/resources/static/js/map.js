@@ -40,7 +40,7 @@ require([
         myMap.removeLayerByType = function(type) {
             var $this = this.map;
             this.map.allLayers.forEach(function(item, i) {
-                if (item != undefined && item.type1 === type) {
+                if (item !== undefined && item.type1 === type) {
                     $this.remove(item);
                 }
             });
