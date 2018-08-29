@@ -12,10 +12,20 @@
         #map {
             padding: 0;
             margin: 0;
-            height: 700px;
+            height: 800px;
             width: 100%;
         }
+        #infoDiv {
+            padding: 8px;
+        }
     </style>
+    <script>
+        var dojoConfig = {
+            has: {
+                "esri-featurelayer-webgl": 1
+            }
+        };
+    </script>
     <script type="text/javascript" src="http://188.9.25.151:8080/arcgis_js_api/library/4.8/init.js"></script>
     <#--<script type="text/javascript" src="https://js.arcgis.com/4.8"></script>-->
     <script>
@@ -39,6 +49,7 @@
                     "esri/geometry/Circle",
                     "esri/layers/support/LabelClass",
                     "esri/geometry/Point",
+                    "esri/widgets/BasemapToggle",
                     "esri/core/watchUtils",
                     "esri/request",
                     "dojo/_base/array",
@@ -48,7 +59,7 @@
                 ],
                 function(
                         Map, SceneView, MapView, MapImageLayer,ImageryLayer,TileLayer,Layer,Extent,FeatureLayer,LayerList
-                        ,VectorTileLayer,urlUtils,esriConfig,Legend,GraphicsLayer,Graphic,Circle,LabelClass,Point, watchUtils,esriRequest,arrayUtils, on, dom) {
+                        ,VectorTileLayer,urlUtils,esriConfig,Legend,GraphicsLayer,Graphic,Circle,LabelClass,Point,BasemapToggle, watchUtils,esriRequest,arrayUtils, on, dom) {
 
 
                     var permitsLyr1 = new TileLayer({
@@ -67,7 +78,7 @@
                         container: "map",
                         map: map
                     });
-
+                    view.ui.add("infoDiv", "top-right");
                     watchUtils.whenTrue(view, "stationary", function() {
                         if (view.extent) {
 
@@ -102,16 +113,115 @@
                         }, {
                             name: "totalCount",
                             alias: "totalCount",
-                            type: "string"
+                            type: "int"
                         }, {
                             name: "avgPrice",
                             alias: "avgPrice",
-                            type: "string"
+                            type: "int"
                         }];
 
                     var pTemplate = {
                         title: "{projectName}",
                         content:"<ul><li>项目名称: {projectName}</li><li>预先售项目编号: {projectNum}</li><li>坐落: {address}</li><li>销售套数: {totalCount}</li><li>均价: {avgPrice}</li></ul>"
+                    };
+
+
+                    var defaultPriceSym = {
+                        type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+                        color: "red",
+                        outline: { // autocasts as new SimpleLineSymbol()
+                            color: "seagreen",
+                            width: 1,
+                            style: "solid"
+                        }
+                    };
+
+                    var priceRender = {
+                        type: "simple", // autocasts as new SimpleRenderer()
+                        symbol: defaultPriceSym,
+                        visualVariables: [{
+                            type: "size",
+                            field: "avgPrice",
+                            //normalizationField: "avgPrice",
+                            legendOptions: {
+                                title: "房屋价格示例(单位:元)"
+                            },
+                            stops: [
+                                {
+                                    value: 10000,
+                                    size: 8,
+                                    label: "<10000"
+                                },
+                                {
+                                    value: 40000,
+                                    size: 16,
+                                    label: "30000-40000"
+                                },
+                                {
+                                    value: 60000,
+                                    size: 24,
+                                    label: "40000-60000"
+                                },
+                                {
+                                    value: 90000,
+                                    size: 28,
+                                    label: "70000-90000"
+                                },
+                                {
+                                    value: 100000,
+                                    size: 36,
+                                    label: ">100000"
+                                }]
+                        }]
+                    };
+
+                    var defaultCountSym = {
+                        type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+                        color: "seagreen",
+                        outline: { // autocasts as new SimpleLineSymbol()
+                            color: "seagreen",
+                            width: 1,
+                            style: "solid"
+                        }
+                    };
+
+                    var countReander = {
+                        type: "simple", // autocasts as new SimpleRenderer()
+                        symbol: defaultCountSym,
+                        visualVariables: [{
+                            type: "size",
+                            field: "totalCount",
+                            //normalizationField: "avgPrice",
+                            legendOptions: {
+                                title: "房屋套数示例(单位:套)"
+                            },
+                            stops: [
+                                {
+                                    value: 5,
+                                    size: 8,
+                                    label: "<5"
+                                },
+                                {
+                                    value: 20,
+                                    size: 16,
+                                    label: "5-20"
+                                },
+                                {
+                                    value: 50,
+                                    size: 24,
+                                    label: "20-50"
+                                },
+                                {
+                                    value: 80,
+                                    size: 28,
+                                    label: "50-80"
+                                },
+                                {
+                                    value: 100,
+                                    size: 36,
+                                    label: ">100"
+                                }]
+                        }]
                     };
 
 
@@ -139,7 +249,9 @@
                     });
 
                     function getData() {
-                        var url = "${ctx.contextPath}/getProjectInfo";
+                        var startDate = $("#start-select").val();
+                        var endDate = $("#end-select").val();
+                        var url = "${ctx.contextPath}/getProjectInfo?startDate=" + startDate + "&endDate=" + endDate;
                         return esriRequest(url, {
                             responseType: "json"
                         });
@@ -169,9 +281,10 @@
                         });
                     }
 
+                    var legend, lyr;
                     function createLayer(graphics) {
                         const statesLabelClass = new LabelClass({
-                            labelExpressionInfo: { expression: "$feature.projectName" },
+                            labelExpressionInfo: { expression: "$feature.address" },
                             symbol: {
                                 type: "text",  // autocasts as new TextSymbol()
                                 color: "red",
@@ -179,53 +292,32 @@
                                 haloColor: "white"
                             }
                         });
-                        var lyr = new FeatureLayer({
+                        var renderer = $("#type-select").val()==="0"?priceRender:countReander;
+                        lyr = new FeatureLayer({
                             source: graphics, // autocast as an array of esri/Graphic
                             // create an instance of esri/layers/support/Field for each field object
                             fields: fields, // This is required when creating a layer from Graphics
                             objectIdField: "ObjectID", // This must be defined when creating a layer from Graphics
-                            renderer: quakesRenderer, // set the visualization on the layer
+                            renderer: renderer, // set the visualization on the layer
                             spatialReference: permitsLyr1.spatialReference,
                             geometryType: "point", // Must be set when creating a layer from Graphics
-                            popupTemplate: pTemplate
+                            popupTemplate: pTemplate,
+                            labelsVisible: true,
+                            labelingInfo : [statesLabelClass]
                         });
                         map.add(lyr);
-                        alert(map.layers.length);
-                        lyr.visible=true;
 
-
-
-
-                        var point = new Point({
-                            x: 59041.86650000047,
-                            y: 19162.87450000085
-                            //spatialReference:permitsLyr1.spatialReference
+                        var title = $("#type-select").val()==="0"?"项目住宅销售价格分析":"项目住宅销售套数分析";
+                        legend = new Legend({
+                            view: view,
+                            layerInfos: [
+                                {
+                                    layer: lyr,
+                                    title: title
+                                }]
                         });
-                        var markerSymbol = {
-                            type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
-                            color: "#FF4000",
-                            style:"circle",
-                            outline: { // autocasts as new SimpleLineSymbol()
-                                color: "green",
-                                width: 5
-                            }
-                        };
-                        var pointGraphic = new Graphic({
-                            geometry: point,
-                            symbol: markerSymbol
-                        });
-                        var areaGraphicLayer = new GraphicsLayer({
-                            visible : true
-                        });
-                        /*for (var i = 0; i< graphics.length; i++) {
-                            var pointGraphic = new Graphic({
-                                geometry: graphics[i].geometry,
-                                symbol: markerSymbol
-                            });
-                            areaGraphicLayer.graphics.add(pointGraphic);
-                        }*/
-                        areaGraphicLayer.graphics.add(pointGraphic);
-                        map.add(areaGraphicLayer);
+
+                        view.ui.add(legend, "bottom-left");
                         return lyr;
                     }
 
@@ -256,9 +348,19 @@
 
                     // Executes if data retrieval was unsuccessful.
                     function errback(error) {
-                        alert(77);
                         console.error("Creating legend failed. ", error);
                     }
+
+                    $("#search").click(function() {
+                        view.ui.remove(legend);
+                        map.remove(lyr);
+                        getData()
+                                .then(createGraphics) // then send it to the createGraphics() method
+                                .then(createLayer) // when graphics are created, create the layer
+                                .otherwise(errback);
+                    });
+
+                    $('.datepicker').datepicker({format:"yyyy-mm-dd",autoclose:true,language:"zh-cn"});
                 });
     </script>
 </head>
@@ -282,6 +384,17 @@
         <section class="content">
             <div id="map">
 
+            </div>
+            <div id="infoDiv" class="esri-widget">
+                销售日期:
+                <input id="start-select" type="text" class="esri-widget datepicker">
+                 结束日期:
+                <input id="end-select" type="text" class="esri-widget datepicker">
+                分析要素:
+                <select id="type-select" class="esri-widget">
+                    <option value="0" selected>单价</option>
+                    <option value="1">套数</option>
+                </select> <button class="btn btn-danger" id="search">查询</button>
             </div>
         </section>
         <!-- /.content -->

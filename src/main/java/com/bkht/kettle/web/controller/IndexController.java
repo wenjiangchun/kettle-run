@@ -1,10 +1,12 @@
 package com.bkht.kettle.web.controller;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
@@ -42,7 +44,16 @@ public class IndexController {
 
     @RequestMapping("/getProjectInfo")
     @ResponseBody
-    public List<ProjectSale> getProjectInfoes() {
+    public List<ProjectSale> getProjectInfoes(@RequestParam String startDate, @RequestParam String endDate) {
+        if (StringUtils.isBlank(startDate)) {
+            startDate = "2018-01-01";
+        }
+        if (StringUtils.isBlank(endDate)) {
+            endDate = "2018-12-31";
+        }
+        startDate = startDate.replaceAll("-","");
+        endDate = endDate.replaceAll("-","");
+
         String sql = "SELECT\n" +
                 "     b.*,\n" +
                 "     p.PERMISSION_NO_,\n" +
@@ -62,6 +73,8 @@ public class IndexController {
                 "             s.house_used_id_ = '10'\n" +
                 "             AND s.avg_price_ <= 500000\n" +
                 "             AND s.avg_price_ != 0\n" +
+                "             AND s.SALE_DATE_ID_ >=" + startDate + "\n" +
+                "             AND s.SALE_DATE_ID_ <=" + endDate + "\n" +
                 "         GROUP BY\n" +
                 "             s.pre_project_id_\n" +
                 "         ORDER BY\n" +
@@ -71,6 +84,7 @@ public class IndexController {
                 " WHERE\n" +
                 "     p.qszt_ = '1'\n" +
                 "     AND p.x_ IS NOT NULL";
+        System.out.println(sql);
         List<Map<String, Object>> result = jdbcTemplate.queryForList(sql);
         return toProjectSale(result);
     }
