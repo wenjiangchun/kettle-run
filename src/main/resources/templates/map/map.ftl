@@ -128,10 +128,10 @@
 
                     var defaultPriceSym = {
                         type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
-                        color: "red",
+                        color: [215,57,37],
                         outline: { // autocasts as new SimpleLineSymbol()
-                            color: "seagreen",
-                            width: 1,
+                            color: "white",
+                            width: 2,
                             style: "solid"
                         }
                     };
@@ -179,8 +179,8 @@
                         type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
                         color: "seagreen",
                         outline: { // autocasts as new SimpleLineSymbol()
-                            color: "seagreen",
-                            width: 1,
+                            color: "white",
+                            width: 2,
                             style: "solid"
                         }
                     };
@@ -217,7 +217,7 @@
                                     label: "50-80"
                                 },
                                 {
-                                    value: 100,
+                                    value: 200,
                                     size: 36,
                                     label: ">100"
                                 }]
