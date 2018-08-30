@@ -130,8 +130,8 @@
                         type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
                         color: "red",
                         outline: { // autocasts as new SimpleLineSymbol()
-                            color: "seagreen",
-                            width: 1,
+                            color: "white",
+                            width: 2,
                             style: "solid"
                         }
                     };
@@ -179,8 +179,8 @@
                         type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
                         color: "seagreen",
                         outline: { // autocasts as new SimpleLineSymbol()
-                            color: "seagreen",
-                            width: 1,
+                            color: "white",
+                            width: 2,
                             style: "solid"
                         }
                     };
@@ -197,29 +197,29 @@
                             },
                             stops: [
                                 {
-                                    value: 5,
-                                    size: 8,
-                                    label: "<5"
-                                },
-                                {
                                     value: 20,
-                                    size: 16,
-                                    label: "5-20"
-                                },
-                                {
-                                    value: 50,
-                                    size: 24,
-                                    label: "20-50"
+                                    size: 12,
+                                    label: "<20"
                                 },
                                 {
                                     value: 80,
-                                    size: 28,
-                                    label: "50-80"
+                                    size: 16,
+                                    label: "20-80"
                                 },
                                 {
-                                    value: 100,
+                                    value: 150,
+                                    size: 24,
+                                    label: "80-150"
+                                },
+                                {
+                                    value: 300,
+                                    size: 28,
+                                    label: "150-300"
+                                },
+                                {
+                                    value: 301,
                                     size: 36,
-                                    label: ">100"
+                                    label: ">300"
                                 }]
                         }]
                     };

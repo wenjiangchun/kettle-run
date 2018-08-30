@@ -35,7 +35,7 @@ public class IndexController {
         List<ProjectSale> projectSaleList = new ArrayList<>();
         result.forEach(r -> {
             System.out.println(r.get("x_").toString() + "," + r.get("y_").toString());
-            ProjectSale projectSale = new ProjectSale(r.get("pre_project_id_").toString(), Integer.parseInt(r.get("totalcount").toString()), Float.parseFloat(r.get("avg_price").toString()), String.valueOf(r.get("PROJECT_ADDR_")), r.get("project_name_").toString(), r.get("PERMISSION_NO_").toString(), r.get("X_").toString(), r.get("Y_").toString());
+            ProjectSale projectSale = new ProjectSale(String.valueOf(r.get("pre_project_id_")), Integer.parseInt(r.get("totalcount").toString()), Float.parseFloat(r.get("avg_price").toString()), String.valueOf(r.get("PROJECT_ADDR_")), String.valueOf(r.get("project_name_")), String.valueOf(r.get("PERMISSION_NO_")), r.get("X_").toString(), r.get("Y_").toString());
             projectSaleList.add(projectSale);
         });
         return projectSaleList;
