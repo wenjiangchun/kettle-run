@@ -5,10 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.ws.rs.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +37,7 @@ public class IndexController {
         List<ProjectSale> projectSaleList = new ArrayList<>();
         result.forEach(r -> {
             System.out.println(r.get("x_").toString() + "," + r.get("y_").toString());
-            ProjectSale projectSale = new ProjectSale(String.valueOf(r.get("pre_project_id_")), Integer.parseInt(r.get("totalcount").toString()), Float.parseFloat(r.get("avg_price").toString()), String.valueOf(r.get("PROJECT_ADDR_")), String.valueOf(r.get("project_name_")), String.valueOf(r.get("PERMISSION_NO_")), r.get("X_").toString(), r.get("Y_").toString());
+            ProjectSale projectSale = new ProjectSale(String.valueOf(r.get("pre_project_id_")), Integer.parseInt(r.get("totalcount").toString()), Float.parseFloat(r.get("avg_price").toString()),Float.parseFloat(r.get("totalarea").toString()), String.valueOf(r.get("PROJECT_ADDR_")), String.valueOf(r.get("project_name_")), String.valueOf(r.get("PERMISSION_NO_")), r.get("X_").toString(), r.get("Y_").toString());
             projectSaleList.add(projectSale);
         });
         return projectSaleList;
@@ -44,12 +46,28 @@ public class IndexController {
 
     @RequestMapping("/getProjectInfo")
     @ResponseBody
-    public List<ProjectSale> getProjectInfoes(@RequestParam String startDate, @RequestParam String endDate) {
+    public List<ProjectSale> getProjectInfoes(@RequestParam String startDate, @RequestParam String endDate, @RequestParam String orderIndex) {
         if (StringUtils.isBlank(startDate)) {
             startDate = "2018-01-01";
         }
         if (StringUtils.isBlank(endDate)) {
             endDate = "2018-12-31";
+        }
+        if (StringUtils.isBlank(orderIndex)) {
+            orderIndex = "0";
+        }
+        String orderName = "avg_Price";
+        switch (orderIndex) {
+            case "0":
+                break;
+            case "1":
+                orderName = "totalCount";
+                break;
+            case "2":
+                orderName = "totalArea";
+                break;
+            default:
+                break;
         }
         startDate = startDate.replaceAll("-","");
         endDate = endDate.replaceAll("-","");
@@ -65,27 +83,48 @@ public class IndexController {
                 "     (\n" +
                 "         SELECT\n" +
                 "             COUNT(1) totalcount,\n" +
+                "             SUM(s.AREA_) totalarea,\n" +
                 "             round(AVG(s.avg_price_),2) avg_price,\n" +
                 "             s.pre_project_id_\n" +
                 "         FROM\n" +
                 "             f_house_first_sale s\n" +
                 "         WHERE\n" +
                 "             s.house_used_id_ = '10'\n" +
-                "             AND s.avg_price_ <= 500000\n" +
-                "             AND s.avg_price_ != 0\n" +
-                "             AND s.SALE_DATE_ID_ >=" + startDate + "\n" +
-                "             AND s.SALE_DATE_ID_ <=" + endDate + "\n" +
+                "             AND s.REG_DATE_ID_ >=" + startDate + "\n" +
+                "             AND s.REG_DATE_ID_ <=" + endDate + "\n" +
                 "         GROUP BY\n" +
                 "             s.pre_project_id_\n" +
-                "         ORDER BY\n" +
-                "             avg_price DESC\n" +
+
                 "     ) b\n" +
                 "     LEFT JOIN f_presale_project p ON b.pre_project_id_ = p.pre_projectid_\n" +
                 " WHERE\n" +
                 "     p.qszt_ = '1'\n" +
-                "     AND p.x_ IS NOT NULL";
+                "     AND p.x_ IS NOT NULL" +
+                "         ORDER BY\n" +
+                "             b." + orderName + " DESC\n" ;
         System.out.println(sql);
         List<Map<String, Object>> result = jdbcTemplate.queryForList(sql);
         return toProjectSale(result);
+    }
+
+    @RequestMapping("/getSaleInfo/{preProjectId}")
+    public String getSaleInfo(@PathVariable Long preProjectId, Model model,@RequestParam String startDate, @RequestParam String endDate){
+        if (StringUtils.isBlank(startDate)) {
+            startDate = "2018-01-01";
+        }
+        if (StringUtils.isBlank(endDate)) {
+            endDate = "2018-12-31";
+        }
+        startDate = startDate.replaceAll("-","");
+        endDate = endDate.replaceAll("-","");
+        String sql = "select * from S_HOUSE_FIRST_SALE_INFO where PRE_PROJECT_ID_=? AND RECORD_DATE_>=? and RECORD_DATE_<=? ORDER BY HOUSE_USED_NAME_";
+        List<Map<String, Object>> results = jdbcTemplate.queryForList(sql, preProjectId, startDate, endDate);
+        model.addAttribute("results",results);
+        if (!results.isEmpty()) {
+            model.addAttribute("preProjectName",results.get(0).get("PRE_PROJECT_NAME_"));
+            model.addAttribute("permissionNum",results.get(0).get("PERMISSION_NUM_"));
+            model.addAttribute("mainBodyName",results.get(0).get("MAINBODY_NAME_"));
+        }
+        return "map/saleInfo";
     }
 }

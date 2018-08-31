@@ -10,6 +10,8 @@ public class ProjectSale implements Serializable {
 
     private float avgPrice;
 
+    private float totalArea;
+
     private String projectAddress;
 
     private String projectName;
@@ -19,15 +21,24 @@ public class ProjectSale implements Serializable {
     private String x;
 
     private String y;
-    public ProjectSale(String preProjectId, int totalCount, float avgPrice, String projectAddress, String projectName, String projectNum, String x, String y) {
+    public ProjectSale(String preProjectId, int totalCount, float avgPrice, float totalArea,String projectAddress, String projectName, String projectNum, String x, String y) {
         this.preProjectId = preProjectId;
         this.totalCount = totalCount;
         this.avgPrice = avgPrice;
+        this.totalArea = totalArea;
         this.projectAddress = projectAddress;
         this.projectName = projectName;
         this.projectNum = projectNum;
         this.x = x;
         this.y = y;
+    }
+
+    public float getTotalArea() {
+        return totalArea;
+    }
+
+    public void setTotalArea(float totalArea) {
+        this.totalArea = totalArea;
     }
 
     public String getPreProjectId() {

@@ -115,130 +115,20 @@
                             alias: "totalCount",
                             type: "int"
                         }, {
+                            name: "totalArea",
+                            alias: "totalArea",
+                            type: "float"
+                        }, {
                             name: "avgPrice",
                             alias: "avgPrice",
-                            type: "int"
+                            type: "float"
                         }];
+
+
 
                     var pTemplate = {
                         title: "{projectName}",
-                        content:"<ul><li>项目名称: {projectName}</li><li>预先售项目编号: {projectNum}</li><li>坐落: {address}</li><li>销售套数: {totalCount}</li><li>均价: {avgPrice}</li></ul>"
-                    };
-
-
-                    var defaultPriceSym = {
-                        type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
-                        color: "red",
-                        outline: { // autocasts as new SimpleLineSymbol()
-                            color: "white",
-                            width: 2,
-                            style: "solid"
-                        }
-                    };
-
-                    var priceRender = {
-                        type: "simple", // autocasts as new SimpleRenderer()
-                        symbol: defaultPriceSym,
-                        visualVariables: [{
-                            type: "size",
-                            field: "avgPrice",
-                            //normalizationField: "avgPrice",
-                            legendOptions: {
-                                title: "房屋价格示例(单位:元)"
-                            },
-                            stops: [
-                                {
-                                    value: 10000,
-                                    size: 8,
-                                    label: "<10000"
-                                },
-                                {
-                                    value: 40000,
-                                    size: 16,
-                                    label: "30000-40000"
-                                },
-                                {
-                                    value: 60000,
-                                    size: 24,
-                                    label: "40000-60000"
-                                },
-                                {
-                                    value: 90000,
-                                    size: 28,
-                                    label: "70000-90000"
-                                },
-                                {
-                                    value: 100000,
-                                    size: 36,
-                                    label: ">100000"
-                                }]
-                        }]
-                    };
-
-                    var defaultCountSym = {
-                        type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
-                        color: "seagreen",
-                        outline: { // autocasts as new SimpleLineSymbol()
-                            color: "white",
-                            width: 2,
-                            style: "solid"
-                        }
-                    };
-
-                    var countReander = {
-                        type: "simple", // autocasts as new SimpleRenderer()
-                        symbol: defaultCountSym,
-                        visualVariables: [{
-                            type: "size",
-                            field: "totalCount",
-                            //normalizationField: "avgPrice",
-                            legendOptions: {
-                                title: "房屋套数示例(单位:套)"
-                            },
-                            stops: [
-                                {
-                                    value: 20,
-                                    size: 12,
-                                    label: "<20"
-                                },
-                                {
-                                    value: 80,
-                                    size: 16,
-                                    label: "20-80"
-                                },
-                                {
-                                    value: 150,
-                                    size: 24,
-                                    label: "80-150"
-                                },
-                                {
-                                    value: 300,
-                                    size: 28,
-                                    label: "150-300"
-                                },
-                                {
-                                    value: 301,
-                                    size: 36,
-                                    label: ">300"
-                                }]
-                        }]
-                    };
-
-
-                    var quakesRenderer = {
-                        type: "simple", // autocasts as new SimpleRenderer()
-                        label: "",
-                        symbol: {
-                            type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
-                            style: "circle",
-                            size: 5,
-                            color: [211, 255, 0, 0],
-                            outline: {
-                                width: 5,
-                                color: "#FF0055",
-                                style: "solid"
-                            }
-                        }
+                        content:"<ul><li>项目名称: {projectName}</li><li>预先售项目编号: {projectNum}</li><li>坐落: {address}</li><li>销售套数: {totalCount}(套)</li><li>销售面积: {totalArea}(㎡)</li><li>均价: {avgPrice}(元)</li><li><a href='javascript:void(0)' onclick='showInfo({ObjectID})'>查看详情</a></li></ul>"
                     };
 
                     view.when(function() {
@@ -251,15 +141,90 @@
                     function getData() {
                         var startDate = $("#start-select").val();
                         var endDate = $("#end-select").val();
-                        var url = "${ctx.contextPath}/getProjectInfo?startDate=" + startDate + "&endDate=" + endDate;
+                        var orderIndex = $("#type-select").val();
+                        var url = "${ctx.contextPath}/getProjectInfo?startDate=" + startDate + "&endDate=" + endDate + "&orderIndex=" + orderIndex;
                         return esriRequest(url, {
                             responseType: "json"
                         });
                     }
-
+                    var legend, lyr, maxVal=0, defaultHouseSym, houseRender, seg1, seg2, seg3,seg4, seg5;
                     function createGraphics(response) {
                         var geoJson = response.data;
                         return geoJson.map(function(feature, i) {
+                            if (i == 0) {
+                                var mark = $("#type-select").val();
+                                var houseColor = "red";
+                                var labelTitle= "销售单价示例(单位:元)";
+                                var labelField = "avgPrice";
+                                console.log(feature.avgPrice);
+                                console.log(feature.totalCount);
+                                console.log(feature.totalArea);
+                                if (mark == "0") {
+                                    maxVal = feature.avgPrice;
+                                } else if (mark == "1") {
+                                    houseColor = "seagreen";
+                                    maxVal = feature.totalCount;
+                                    labelTitle= "销售套数示例(单位:套)";
+                                    labelField = "totalCount";
+                                }else if (mark == "2") {
+                                    houseColor = "blue";
+                                    maxVal = feature.totalArea;
+                                    labelTitle= "销售面积示例(单位:㎡)";
+                                    labelField = "totalArea";
+                                }
+                                seg1 = maxVal /10;
+                                seg2 = maxVal * 3 /10;
+                                seg3 = maxVal * 7 /10;
+                                seg4 = maxVal * 9 /10;
+                                seg5 = maxVal * 9 /10 + 1;
+                                defaultHouseSym = {
+                                    type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+                                    color: houseColor,
+                                    outline: { // autocasts as new SimpleLineSymbol()
+                                        color: "white",
+                                        width: 1,
+                                        style: "solid"
+                                    }
+                                };
+                                houseRender = {
+                                    type: "simple", // autocasts as new SimpleRenderer()
+                                    symbol: defaultHouseSym,
+                                    visualVariables: [{
+                                        type: "size",
+                                        field: labelField,
+                                        //normalizationField: "avgPrice",
+                                        legendOptions: {
+                                            title: labelTitle
+                                        },
+                                        stops: [
+                                            {
+                                                value: seg1,
+                                                size: 8,
+                                                label: "<" + seg1
+                                            },
+                                            {
+                                                value: seg2,
+                                                size: 16,
+                                                label: seg1 + "-" + seg2
+                                            },
+                                            {
+                                                value: seg3,
+                                                size: 24,
+                                                label: seg2 + "-" + seg3
+                                            },
+                                            {
+                                                value: seg4,
+                                                size: 28,
+                                                label: seg3 + "-" + seg4
+                                            },
+                                            {
+                                                value: seg5,
+                                                size: 36,
+                                                label: ">" + seg4
+                                            }]
+                                    }]
+                                };
+                            }
                             return {
                                 geometry: new Point({
                                     x: feature.x,
@@ -275,13 +240,14 @@
                                     projectName: feature.projectName,
                                     projectNum: feature.projectNum,
                                     totalCount:feature.totalCount,
+                                    totalArea:feature.totalArea,
                                     avgPrice:feature.avgPrice
                                 }
                             };
                         });
                     }
 
-                    var legend, lyr;
+
                     function createLayer(graphics) {
                         const statesLabelClass = new LabelClass({
                             labelExpressionInfo: { expression: "$feature.address" },
@@ -292,13 +258,12 @@
                                 haloColor: "white"
                             }
                         });
-                        var renderer = $("#type-select").val()==="0"?priceRender:countReander;
                         lyr = new FeatureLayer({
                             source: graphics, // autocast as an array of esri/Graphic
                             // create an instance of esri/layers/support/Field for each field object
                             fields: fields, // This is required when creating a layer from Graphics
                             objectIdField: "ObjectID", // This must be defined when creating a layer from Graphics
-                            renderer: renderer, // set the visualization on the layer
+                            renderer: houseRender, // set the visualization on the layer
                             spatialReference: permitsLyr1.spatialReference,
                             geometryType: "point", // Must be set when creating a layer from Graphics
                             popupTemplate: pTemplate,
@@ -307,7 +272,7 @@
                         });
                         map.add(lyr);
 
-                        var title = $("#type-select").val()==="0"?"项目住宅销售价格分析":"项目住宅销售套数分析";
+                        var title = "项目住宅销售" + $("#type-select").find("option:selected").text() + "分析";
                         legend = new Legend({
                             view: view,
                             layerInfos: [
@@ -362,6 +327,17 @@
 
                     $('.datepicker').datepicker({format:"yyyy-mm-dd",autoclose:true,language:"zh-cn"});
                 });
+
+        var showInfo = function(objectId) {
+            layer.open({
+                type: 2,
+                title: "项目销售详情(销售日期" + $("#start-select").val() + "至" + $("#end-select").val() + ")",
+                shadeClose: true,
+                shade: 0.8,
+                area: ['99%', '90%'],
+                content: '${ctx.contextPath}/getSaleInfo/' + objectId +"?startDate="+$("#start-select").val()+"&endDate=" + $("#end-select").val()
+            });
+        };
     </script>
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
@@ -388,12 +364,13 @@
             <div id="infoDiv" class="esri-widget">
                 销售日期:
                 <input id="start-select" type="text" class="esri-widget datepicker">
-                 结束日期:
+                 -至-
                 <input id="end-select" type="text" class="esri-widget datepicker">
                 分析要素:
                 <select id="type-select" class="esri-widget">
                     <option value="0" selected>单价</option>
                     <option value="1">套数</option>
+                    <option value="2">面积</option>
                 </select> <button class="btn btn-danger" id="search">查询</button>
             </div>
         </section>
