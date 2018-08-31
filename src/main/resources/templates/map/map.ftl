@@ -128,7 +128,7 @@
 
                     var pTemplate = {
                         title: "{projectName}",
-                        content:"<ul><li>项目名称: {projectName}</li><li>预先售项目编号: {projectNum}</li><li>坐落: {address}</li><li>销售套数: {totalCount}(套)</li><li>销售面积: {totalArea}(㎡)</li><li>均价: {avgPrice}(元)</li><li><a href='javascript:void(0)' onclick='showInfo({ObjectID})'>查看详情</a></li></ul>"
+                        content:"<ul><li><strong>项目名称</strong>: {projectName}</li><li><strong>预现售项目编号</strong>: {projectNum}</li><li><strong>坐落</strong>: {address}</li><li><strong>销售套数</strong>: {totalCount}(套)</li><li><strong>销售面积</strong>: {totalArea}(㎡)</li><li><strong>均价</strong>: {avgPrice}(元)</li><li><a href='javascript:void(0)' onclick='showInfo({ObjectID})'><strong>查看详情</strong></a></li></ul>"
                     };
 
                     view.when(function() {
@@ -172,11 +172,11 @@
                                     labelTitle= "销售面积示例(单位:㎡)";
                                     labelField = "totalArea";
                                 }
-                                seg1 = maxVal /10;
-                                seg2 = maxVal * 3 /10;
-                                seg3 = maxVal * 7 /10;
-                                seg4 = maxVal * 9 /10;
-                                seg5 = maxVal * 9 /10 + 1;
+                                seg1 = Math.ceil(maxVal /10);
+                                seg2 = Math.ceil(maxVal * 3 /10);
+                                seg3 = Math.ceil(maxVal * 7 /10);
+                                seg4 = Math.ceil(maxVal * 9 /10);
+                                seg5 = Math.ceil(maxVal * 9 /10) + 1;
                                 defaultHouseSym = {
                                     type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
                                     color: houseColor,
@@ -349,7 +349,7 @@
         <section class="content-header">
             <h1>
                 地图展示
-                <small>转换列表</small>
+                <small>住宅销售分析</small>
             </h1>
             <ol class="breadcrumb">
                 <li><a href="#"><i class="fa fa-dashboard"></i> 主页</a></li>

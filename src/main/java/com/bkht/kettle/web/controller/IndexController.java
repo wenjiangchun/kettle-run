@@ -89,7 +89,7 @@ public class IndexController {
                 "         FROM\n" +
                 "             f_house_first_sale s\n" +
                 "         WHERE\n" +
-                "             s.house_used_id_ = '10'\n" +
+                "             s.house_used_id_ in(10,11,12,111,112) \n" +
                 "             AND s.REG_DATE_ID_ >=" + startDate + "\n" +
                 "             AND s.REG_DATE_ID_ <=" + endDate + "\n" +
                 "         GROUP BY\n" +
