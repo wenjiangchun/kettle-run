@@ -1,6 +1,9 @@
 package com.bkht.kettle.web.controller;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
@@ -11,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.ws.rs.Path;
+import java.time.LocalDate;
+import java.time.Year;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +24,8 @@ import java.util.Map;
 @Controller
 @RequestMapping("/")
 public class IndexController {
+
+    private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -29,6 +37,9 @@ public class IndexController {
 
     @RequestMapping("/map")
     public String map(Model model) {
+        LocalDate localDate = LocalDate.now();
+        model.addAttribute("startDate", localDate.getYear() + "-01-01");
+        model.addAttribute("endDate", localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         return "map/map";
     }
 
@@ -36,7 +47,6 @@ public class IndexController {
     private List<ProjectSale> toProjectSale(List<Map<String, Object>> result) {
         List<ProjectSale> projectSaleList = new ArrayList<>();
         result.forEach(r -> {
-            System.out.println(r.get("x_").toString() + "," + r.get("y_").toString());
             ProjectSale projectSale = new ProjectSale(String.valueOf(r.get("pre_project_id_")), Integer.parseInt(r.get("totalcount").toString()), Float.parseFloat(r.get("avg_price").toString()),Float.parseFloat(r.get("totalarea").toString()), String.valueOf(r.get("PROJECT_ADDR_")), String.valueOf(r.get("project_name_")), String.valueOf(r.get("PERMISSION_NO_")), r.get("X_").toString(), r.get("Y_").toString());
             projectSaleList.add(projectSale);
         });
@@ -47,11 +57,12 @@ public class IndexController {
     @RequestMapping("/getProjectInfo")
     @ResponseBody
     public List<ProjectSale> getProjectInfoes(@RequestParam String startDate, @RequestParam String endDate, @RequestParam String orderIndex) {
+        LocalDate localDate = LocalDate.now();
         if (StringUtils.isBlank(startDate)) {
-            startDate = "2018-01-01";
+            startDate = localDate.getYear() + "-01-01";
         }
         if (StringUtils.isBlank(endDate)) {
-            endDate = "2018-12-31";
+            endDate = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         }
         if (StringUtils.isBlank(orderIndex)) {
             orderIndex = "0";
@@ -102,18 +113,19 @@ public class IndexController {
                 "     AND p.x_ IS NOT NULL" +
                 "         ORDER BY\n" +
                 "             b." + orderName + " DESC\n" ;
-        System.out.println(sql);
+        logger.debug(sql);
         List<Map<String, Object>> result = jdbcTemplate.queryForList(sql);
         return toProjectSale(result);
     }
 
     @RequestMapping("/getSaleInfo/{preProjectId}")
     public String getSaleInfo(@PathVariable Long preProjectId, Model model,@RequestParam String startDate, @RequestParam String endDate){
+        LocalDate localDate = LocalDate.now();
         if (StringUtils.isBlank(startDate)) {
-            startDate = "2018-01-01";
+            startDate = localDate.getYear() + "-01-01";
         }
         if (StringUtils.isBlank(endDate)) {
-            endDate = "2018-12-31";
+            endDate = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         }
         startDate = startDate.replaceAll("-","");
         endDate = endDate.replaceAll("-","");

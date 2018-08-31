@@ -363,9 +363,9 @@
             </div>
             <div id="infoDiv" class="esri-widget">
                 销售日期:
-                <input id="start-select" type="text" class="esri-widget datepicker">
+                <input id="start-select" type="text" class="esri-widget datepicker" value="${startDate!}">
                  -至-
-                <input id="end-select" type="text" class="esri-widget datepicker">
+                <input id="end-select" type="text" class="esri-widget datepicker" value="${endDate!}">
                 分析要素:
                 <select id="type-select" class="esri-widget">
                     <option value="0" selected>单价</option>
