@@ -19,6 +19,18 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.servlet.support.RequestContextUtils;
+
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 @SpringBootApplication
 @EnableCaching
@@ -38,8 +50,20 @@ public class KettleRunApplication {
             LOGGER.debug("{} = {}", k, v);
         });
 
-    }
+        Set<String> result = new HashSet<String>();
+        WebApplicationContext wc = (WebApplicationContext) ctx;
+        RequestMappingHandlerMapping bean = wc.getBean(RequestMappingHandlerMapping.class);
+        Map<RequestMappingInfo, HandlerMethod> handlerMethods = bean.getHandlerMethods();
+        for (RequestMappingInfo rmi : handlerMethods.keySet()) {
+            PatternsRequestCondition pc = rmi.getPatternsCondition();
+            Set<String> pSet = pc.getPatterns();
+            result.addAll(pSet);
+            pSet.forEach(p -> {
+                System.out.println(p);
+            });
 
+        }
+    }
 
 
     @Bean

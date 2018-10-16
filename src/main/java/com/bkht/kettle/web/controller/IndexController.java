@@ -129,7 +129,7 @@ public class IndexController {
         }
         startDate = startDate.replaceAll("-","");
         endDate = endDate.replaceAll("-","");
-        String sql = "select * from S_HOUSE_FIRST_SALE_INFO where PRE_PROJECT_ID_=? AND RECORD_DATE_>=? and RECORD_DATE_<=? ORDER BY HOUSE_USED_NAME_";
+        String sql = "select * from S_HOUSE_FIRST_SALE_INFO where PRE_PROJECT_ID_=? AND RECORD_DATE_ID_>=? and RECORD_DATE_ID_<=? ORDER BY HOUSE_USED_NAME_";
         List<Map<String, Object>> results = jdbcTemplate.queryForList(sql, preProjectId, startDate, endDate);
         model.addAttribute("results",results);
         if (!results.isEmpty()) {

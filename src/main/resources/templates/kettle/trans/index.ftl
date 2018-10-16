@@ -2,8 +2,8 @@
 <html>
 <head>
   <#include "../../common/head.ftl"/>
-    <link rel="stylesheet" href="${ctx.contextPath}/adminLTE/datatables.net-bs/css/dataTables.bootstrap.min.css">
-    <link rel="stylesheet" href="{ctx.contextPath}/adminLTE/Ionicons/css/ionicons.min.css">
+    <link rel="stylesheet" href="${ctx.contextPath}/resources/adminLTE/datatables.net-bs/css/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="{ctx.contextPath}/resources/adminLTE/Ionicons/css/ionicons.min.css">
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -84,12 +84,12 @@
 <#include "../../common/foot.ftl"/>
 <#include "../../common/left.ftl"/>
 </div>
-<script src="${ctx.contextPath}/adminLTE/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="${ctx.contextPath}/adminLTE/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<script src="${ctx.contextPath}/resources/adminLTE/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="${ctx.contextPath}/resources/adminLTE/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
 <!-- SlimScroll -->
-<script src="${ctx.contextPath}/adminLTE/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+<script src="${ctx.contextPath}/resources/adminLTE/jquery-slimscroll/jquery.slimscroll.min.js"></script>
 <!-- FastClick -->
-<script src="${ctx.contextPath}/adminLTE/fastclick/lib/fastclick.js"></script>
+<script src="${ctx.contextPath}/resources/adminLTE/fastclick/lib/fastclick.js"></script>
 <script>
     $(function () {
         initMenu();
