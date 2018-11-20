@@ -24,7 +24,7 @@ public class KettleTask {
     private KettleUtils kettleUtils;
 
     //@Scheduled(cron = "0 50 15-23 * * *")
-    //@Scheduled(cron = "0 25 15 * * ?")
+    @Scheduled(cron = "0 0 8 * * ?")
     public void run() {
         //每天执行一次
         //String[] transObjectIds = {"19","13","16","36","32","30","33","31"};
