@@ -14,8 +14,8 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.5.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <version>2.1.5.RELEASE</version>
+        <relativePath/>
     </parent>
 
     <properties>
@@ -52,7 +52,10 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -66,29 +69,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-       <!-- <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
-        </dependency>-->
-       <!-- <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <scope>runtime</scope>
-        </dependency>-->
 
         <dependency>
-            <groupId>org.apache.shiro</groupId>
-            <artifactId>shiro-spring-boot-web-starter</artifactId>
-            <version>1.4.0</version>
-        </dependency>
-
-        <!--<dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.11</version>
+            <version>8.0.16</version>
             <scope>runtime</scope>
-        </dependency>-->
+        </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -97,21 +84,14 @@
         </dependency>
 
         <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>ojdbc6</artifactId>
-            <version>11.2.0.1.0</version>
-            <scope>runtime</scope>
-        </dependency>
-
-        <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-core</artifactId>
-            <version>8.0.0.0-28</version>
+            <version>8.2.0.0-25</version>
         </dependency>
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-engine</artifactId>
-            <version>8.0.0.0-28</version>
+            <version>8.2.0.0-25</version>
             <exclusions>
                 <exclusion>
                     <artifactId>jetty-webapp</artifactId>

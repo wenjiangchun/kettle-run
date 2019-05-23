@@ -3,7 +3,7 @@
 <head>
   <#include "../../common/head.ftl"/>
     <link rel="stylesheet" href="${ctx.contextPath}/resources/adminLTE/datatables.net-bs/css/dataTables.bootstrap.min.css">
-    <link rel="stylesheet" href="${ctx.contextPath}/resources/adminLTE/Ionicons/css/ionicons.min.css">
+    <link rel="stylesheet" href="{ctx.contextPath}/resources/adminLTE/Ionicons/css/ionicons.min.css">
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -49,7 +49,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <#list transList as trans>
+                                <#list jobList as trans>
                                 <tr>
                                     <td>${trans.objectId!}</td>
                                     <td>${trans.name!}</td>
@@ -136,7 +136,7 @@
             shadeClose: true,
             shade: 0.8,
             area: ['800px', '60%'],
-            content: '${ctx.contextPath}/kettle/trans/getElementInfo/' + objectId + '/' + type //iframe的url
+            content: '${ctx.contextPath}/kettle/job/getElementInfo/' + objectId + '/' + type //iframe的url
         });
     }
 
@@ -147,18 +147,7 @@
             shadeClose: true,
             shade: 0.8,
             area: ['80%', '60%'],
-            content: '${ctx.contextPath}/kettle/trans/getElementLog/' + objectId + '/' + type //iframe的url
-        });
-    }
-
-    function previewTrans(objectId, title, type) {
-        layer.open({
-            type: 2,
-            title: title,
-            shadeClose: true,
-            shade: 0.8,
-            area: ['80%', '70%'],
-            content: '${ctx.contextPath}/kettle/trans/previewTrans/' + objectId + '/' + type //iframe的url
+            content: '${ctx.contextPath}/kettle/getElementLog/' + objectId + '/' + type //iframe的url
         });
     }
 
